@@ -35,3 +35,14 @@ cd "$HOME/.vim/bundle"
 # Clone the repository.
 git clone https://github.com/Helcaraxan/schemalang-vim
 ```
+
+## Release-notes
+### v0.1.1 - 12 / 02 / 2017
+* Better recognition of field names with less "false" coloring.
+* Only color user-defined types (CamelCase) in the first part of a component field or in a type, component or enum
+  definition.
+* Only color one component field name per line: specifying two fields with the same type on a single line is not allowed
+  and coloring should suggest so.
+
+### v0.1.0 - 12 / 02 / 2017
+First version with support for the current Schemalang syntax.

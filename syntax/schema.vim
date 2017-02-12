@@ -1,8 +1,8 @@
 " Vim syntax file
 " Language: schemalang for SpatialOS by Improbable(tm)
 " Maintainer: Duco van Amstel <Helcaraxan @ GitHub>
-" Last Change: 11.02.2017
-" Version: 0.1.0
+" Last Change: 12.02.2017
+" Version: 0.1.1
 
 if version < 600
 	syntax clear
@@ -27,29 +27,27 @@ syntax match schemaPackageName "\l\+\(\.\l\+\)*\(;\)\@=" display
 syntax keyword schemaPackageKeyword package nextgroup=schemaPackageName skipwhite
 
 
-" field ID
+" field
 syntax match schemaFieldId "=\s\+[1-9][0-9]*\(;\)\@=" contained display
-
-
-" identifiers
-syntax match schemaFieldName "\l\([a-z_]*\l\)\?" contained nextgroup=schemaFieldId skipwhite
+syntax match schemaFieldName "\(\s\)\@<=\l\([a-z_]*\l\)\?\(\s\+=\)\@=" contained nextgroup=schemaFieldId skipwhite
+syntax region schemaField start="\l" end=";" contained display contains=schemaFieldName,schemaFieldId
 
 
 " type name
-syntax match schemaUserTypeName "\(\u\l\+\)\+\u\?" contained nextgroup=schemaFieldName skipwhite
+syntax match schemaUserTypeName "\(^\s*\(\(component\|enum\|type\)\?\s\|\l\+<\)\)\@<=\(\u\l\+\)\+\u\?" contained nextgroup=schemaField skipwhite
 
 
 " type tokens
-syntax keyword schemaTypeKeywords bool contained nextgroup=schemaFieldName skipwhite
-syntax keyword schemaTypeKeywords uint32 uint64 int32 int64 sint32 sint64 contained nextgroup=schemaFieldName skipwhite
-syntax keyword schemaTypeKeywords fixed32 fixed64 sfixed32 sfixed64 float double contained nextgroup=schemaFieldName skipwhite
-syntax keyword schemaTypeKeywords string bytes contained nextgroup=schemaFieldName skipwhite
-syntax keyword schemaTypeKeywords Coordinates Vector3d Vector3f contained nextgroup=schemaFieldName skipwhite
-syntax keyword schemaTypeKeywords EntityId EntityPosition contained nextgroup=schemaFieldName skipwhite
+syntax keyword schemaTypeKeywords bool contained nextgroup=schemaField skipwhite
+syntax keyword schemaTypeKeywords uint32 uint64 int32 int64 sint32 sint64 contained nextgroup=schemaField skipwhite
+syntax keyword schemaTypeKeywords fixed32 fixed64 sfixed32 sfixed64 float double contained nextgroup=schemaField skipwhite
+syntax keyword schemaTypeKeywords string bytes contained nextgroup=schemaField skipwhite
+syntax keyword schemaTypeKeywords Coordinates Vector3d Vector3f contained nextgroup=schemaField skipwhite
+syntax keyword schemaTypeKeywords EntityId EntityPosition contained nextgroup=schemaField skipwhite
 
 
 " container types
-syntax region schemaContainedType start="<" end=">" contained contains=schemaUserTypeName,schemaTypeKeywords nextgroup=schemaFieldName skipwhite
+syntax region schemaContainedType start="<" end=">" contained contains=schemaUserTypeName,schemaTypeKeywords nextgroup=schemaField skipwhite
 syntax keyword schemaContainerKeywords list map option contained nextgroup=schemaContainedType
 
 
@@ -60,7 +58,7 @@ syntax match schemaComponentId "^\s*id\s\+=\s\+[1-9][0-9]*\(;\)\@=" contained di
 " block definitions
 syntax keyword schemaBlockKeywords component enum type nextgroup=schemaUserTypeName skipwhite
 syntax region schemaBlockStatement start="." end=";\|}" contained display oneline transparent contains=ALLBUT,schemaPackageKeyword,schemaPackageName nextgroup=schemaBlockStatement
-syntax region schemaBlockBody start="{" end="}" fold transparent contains=ALLBUT,schemaPackage.*,schemaFieldName,schemaFieldId
+syntax region schemaBlockBody start="{" end="}" fold transparent contains=ALLBUT,schemaPackage.*
 
 
 " highlighting groups
