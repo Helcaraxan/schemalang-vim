@@ -3,6 +3,8 @@
 Syntaxic coloring support in the VIm editor for Schemalang.
 Schemalang is used by Improbable's [SpatialOS](https://spatialos.improbable.io) platform.
 
+![Example of schemalang-vim syntax coloring](https://github.com/Helcaraxan/schemalang-vim/blob/master/examples/coloring.png)
+
 ## Support
 This repo is maintained on a volontary basis. Feel free to PR or create issues but there are no guarantees on the
 time-to-fix or time-to-feature.
@@ -37,6 +39,15 @@ git clone https://github.com/Helcaraxan/schemalang-vim
 ```
 
 ## Release-notes
+### v0.1.3 - 11 / 03 / 2017
+* Corrected an error where the coloring of the 'option' keyword and subsequent field was incorrect.
+* Corrected an error introduced in v0.1.2 where user-defined types were no longer colored in 'list' and 'map'
+  containers.
+
+### v0.1.2 - 08 / 03 / 2017
+* More robust pattern matching to prevent false / incorrect coloring of some fields.
+* Now can color commands and events too following the SpatialOS 10.x schema syntax.
+
 ### v0.1.1 - 12 / 02 / 2017
 * Better recognition of field names with less "false" coloring.
 * Only color user-defined types (CamelCase) in the first part of a component field or in a type, component or enum
