@@ -18,7 +18,6 @@ endif
 syntax match schemaPackageName "\(package\s\+\)\@<=\l\+\(\.\l\+\)*\(;\)\@=" display
 syntax keyword schemaPackageKeyword package skipwhite
 
-
 " field
 syntax match schemaFieldId "\(=\s\+\)\@<=[1-9][0-9]*\(;\)\@=" contained display
 syntax match schemaFieldName "\s\@<=\l\([a-z_]*\l\)\?\(\s\+=\)\@=" contained nextgroup=schemaFieldId skipwhite
@@ -26,7 +25,7 @@ syntax region schemaField start="\l" end=";" contained display contains=schemaFi
 
 
 " type name
-syntax match schemaUserTypeName "\(\s\|(\)\@<=\(\u\l\+\)\+\u\?\(\s\|)\|;\)\@=" display
+syntax match schemaUserTypeName "\(\s\|(\|<\)\@<=\(\u\l\+\)\+\u\?\(\s\|)\|>\|;\)\@=" display
 syntax keyword schemaUserTypeKeyword component enum type nextgroup=schemaUserTypeName skipwhite
 
 
@@ -41,7 +40,13 @@ syntax keyword schemaTypeKeywords EntityId EntityPosition contained nextgroup=sc
 
 " container types
 syntax region schemaContainedType start="<" end=">" contained contains=schemaUserTypeName,schemaTypeKeywords nextgroup=schemaField skipwhite
-syntax keyword schemaContainerKeywords list map option contained nextgroup=schemaContainedType
+syntax keyword schemaContainerKeywords list map contained nextgroup=schemaContainedType
+
+
+" options
+syntax keyword schemaOptionValue true false contained
+syntax keyword schemaOptionType queryable synchronized contained nextgroup=schemaOptionValue skipwhite
+syntax keyword schemaOptionKeywords option contained nextgroup=schemaOptionType skipwhite
 
 
 " events
@@ -98,6 +103,10 @@ highlight link schemaPackageName       Identifier
 highlight link schemaComponentId       Constant
 
 highlight link schemaContainerKeywords Structure
+
+highlight link schemaOptionKeywords    Keyword
+highlight link schemaOptionType        Structure
+highlight link schemaOptionValue       Constant
 
 highlight link schemaEventKeywords     Structure
 highlight link schemaEventName         Identifier
