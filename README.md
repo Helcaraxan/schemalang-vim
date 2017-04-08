@@ -39,6 +39,11 @@ git clone https://github.com/Helcaraxan/schemalang-vim
 ```
 
 ## Release-notes
+### v0.1.4 - 09 / 04 / 2017
+* Solved an issue where user-defined types were not correctly colored in some circumstances.
+* Added support for coloring of types that are imported from other packages.
+* General rewrite of the syntax tree structure for easier maintainance.
+
 ### v0.1.3 - 11 / 03 / 2017
 * Corrected an error where the coloring of the 'option' keyword and subsequent field was incorrect.
 * Corrected an error introduced in v0.1.2 where user-defined types were no longer colored in 'list' and 'map'

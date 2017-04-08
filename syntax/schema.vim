@@ -1,8 +1,8 @@
 " Vim syntax file
 " Language: schemalang for SpatialOS by Improbable(tm)
 " Maintainer: Duco van Amstel <Helcaraxan @ GitHub>
-" Last Change: 12.02.2017
-" Version: 0.1.1
+" Last Change: 09.04.2017
+" Version: 0.1.4
 
 if version < 600
 	syntax clear
@@ -14,116 +14,140 @@ endif
 " Syntax
 "-------------------------------------------------------------------------------
 
-" package
-syntax match schemaPackageName "\(package\s\+\)\@<=\l\+\(\.\l\+\)*\(;\)\@=" display
-syntax keyword schemaPackageKeyword package skipwhite
-
-" field
-syntax match schemaFieldId "\(=\s\+\)\@<=[1-9][0-9]*\(;\)\@=" contained display
-syntax match schemaFieldName "\s\@<=\l\([a-z_]*\l\)\?\(\s\+=\)\@=" contained nextgroup=schemaFieldId skipwhite
-syntax region schemaField start="\l" end=";" contained display contains=schemaFieldName,schemaFieldId
-
-
-" type name
-syntax match schemaUserTypeName "\(\s\|(\|<\)\@<=\(\u\l\+\)\+\u\?\(\s\|)\|>\|;\)\@=" display
-syntax keyword schemaUserTypeKeyword component enum type nextgroup=schemaUserTypeName skipwhite
-
-
-" type tokens
-syntax keyword schemaTypeKeywords bool contained nextgroup=schemaField skipwhite
-syntax keyword schemaTypeKeywords uint32 uint64 int32 int64 sint32 sint64 contained nextgroup=schemaField skipwhite
-syntax keyword schemaTypeKeywords fixed32 fixed64 sfixed32 sfixed64 float double contained nextgroup=schemaField skipwhite
-syntax keyword schemaTypeKeywords string bytes contained nextgroup=schemaField skipwhite
-syntax keyword schemaTypeKeywords Coordinates Vector3d Vector3f contained nextgroup=schemaField skipwhite
-syntax keyword schemaTypeKeywords EntityId EntityPosition contained nextgroup=schemaField skipwhite
-
-
-" container types
-syntax region schemaContainedType start="<" end=">" contained contains=schemaUserTypeName,schemaTypeKeywords nextgroup=schemaField skipwhite
-syntax keyword schemaContainerKeywords list map contained nextgroup=schemaContainedType
-
-
-" options
-syntax keyword schemaOptionValue true false contained
-syntax keyword schemaOptionType queryable synchronized contained nextgroup=schemaOptionValue skipwhite
-syntax keyword schemaOptionKeywords option contained nextgroup=schemaOptionType skipwhite
-
-
-" events
-syntax match schemaEventName "\(\s\)\@<=\l\([a-z_]*\l\)\?\(;\)\@=" contained display
-syntax match schemaEventType "\(\s\)\@<=\(\l\+\d{0,2}\|\(\u\l\+\)\+\u\?\)\(\s\)\@=" contained contains=schemaUserTypeName,schemaTypeKeywords nextgroup=schemaEventName skipwhite
-syntax region schemaEventField start="\l\|\u" end=";" contained display contains=schemaEventType,schemaEventName
-syntax keyword schemaEventKeywords event contained nextgroup=schemaEventField skipwhite
-
-
-" commands
-syntax region schemaCommandInputType start="(" end=")" contained contains=schemaUserTypeName,schemaTypeKeywords
-syntax match schemaCommandName "\(\s\)\@<=\l\([a-z_]*\l\)\?\((\)\@=" contained display nextgroup=schemaCommandInputType
-syntax match schemaCommandOutputType "\(\s\)\@<=\(\l\+\d{0,2}\|\(\u\l\+\)\+\u\?\)\(\s\)\@=" contained contains=schemaUserTypeName,schemaTypeKeywords nextgroup=schemaCommandName skipwhite
-syntax region schemaCommandField start="\l\|\u" end=";" contained display contains=schemaCommandOutputType,schemaCommandName,schemaCommandInputType
-syntax keyword schemaCommandKeywords command contained nextgroup=schemaCommandField skipwhite
-
-
-" data
-syntax match schemaDataType "\(\s\)\@<=\(\l\+\d{0,2}\|\(\u\l\+\)\+\u\?\)\(;\)\@=" contained contains=schemaUserTypeName,schemaTypeKeywords
-syntax region schemaDataField start="\l\|\u" end=";" contained display contains=schemaDataType
-syntax keyword schemaDataKeywords data contained nextgroup=schemaDataField skipwhite
-
-
-" component ID
-syntax match schemaComponentId "^\s*id\s\+=\s\+[1-9][0-9]*\(;\)\@=" contained display
-
-
-" block definitions
-syntax region schemaBlockStatement start="." end=";\|}" contained display oneline transparent contains=ALLBUT,schemaPackage.* nextgroup=schemaBlockStatement
-syntax region schemaBlockBody start="{" end="}" fold transparent contains=ALLBUT,schemaPackage.*
-
-
 " todo
-syntax keyword schemaTodo TODO FIXME XXX NOTE contained
+syntax keyword  schemaTodo TODO FIXME XXX NOTE contained
 
 
 " comments
-syntax match schemaComment "//.*$" contains=schemaTodo
-syntax match schemaComment "/\*\(\(\_.*\*/\)\|\(\_.*\(\*/\)\@!\_.*\%$\)\)" contains=schemaTodo
+syntax match    schemaComment "//.*$" contains=schemaTodo
+syntax match    schemaComment "/\*\(\(\_.*\*/\)\|\(\_.*\(\*/\)\@!\_.*\%$\)\)" contains=schemaTodo
+
+
+" package
+syntax region   schemaPackage start="package" end=";" oneline contains=schemaPackageKeyword,schemaPackageName display
+syntax keyword  schemaPackageKeyword package nextgroup=schemaPackageName skipwhite
+syntax match    schemaPackageName "\l\+\(\.\l\+\)*" display
+
+
+" basic types
+syntax keyword  schemaTypeKeywords bool contained nextgroup=schemaField skipwhite
+syntax keyword  schemaTypeKeywords uint32 uint64 int32 int64 sint32 sint64 contained nextgroup=schemaField skipwhite
+syntax keyword  schemaTypeKeywords fixed32 fixed64 sfixed32 sfixed64 float double contained nextgroup=schemaField skipwhite
+syntax keyword  schemaTypeKeywords string bytes contained nextgroup=schemaField skipwhite
+syntax keyword  schemaTypeKeywords Coordinates Vector3d Vector3f contained nextgroup=schemaField skipwhite
+syntax keyword  schemaTypeKeywords EntityId EntityPosition contained nextgroup=schemaField skipwhite
+
+
+" user-defined types
+syntax match    schemaTypeUser "\(\l\+\.\)*\u\a*\(\.\u\a*\)*" contained contains=schemaPackageName,schemaTypeUserName skipwhite
+syntax match    schemaTypeUserName "\u\a*\(\.\u\a*\)*" contained skipwhite
+
+
+" collection types
+syntax match    schemaTypeCollection "list\|map\S\+>\s" contained contains=schemaTypeCollectionContainer,schemaTypeCollectionKeywords skipwhite
+syntax keyword  schemaTypeCollectionKeywords list map contained nextgroup=schemaTypeCollectionContainer
+syntax region   schemaTypeCollectionContainer start="<" end=">" contained contains=schemaTypeCollection,schemaTypeKeywords,schemaTypeUser skipwhite
+
+
+" component block
+syntax region   schemaBlockComponent start="component" end="^}" keepend contains=schemaBlockComponent,schemaBlockComponentKeyword,schemaStatement,schemaTypeUserName display
+syntax keyword  schemaBlockComponentKeyword component contained nextgroup=schemaTypeUserName skipwhite
+
+
+" enum block
+syntax region   schemaBlockEnum start="enum" end="^}" keepend contains=schemaBlockEnumField,schemaBlockEnumKeyword,schemaBlockEnumStatement,schemaTypeUserName display
+syntax keyword  schemaBlockEnumKeyword enum contained nextgroup=schemaTypeUserName skipwhite
+syntax region   schemaBlockEnumStatement start="\a" end=";" contained oneline contains=schemaBlockEnumField,schemaFieldId nextgroup=schemaBlockEnumStatement display
+syntax match    schemaBlockEnumField "\a\+" contained nextgroup=schemaFieldId display
+
+
+" type block
+syntax region   schemaBlockType start="type \u\a* {" end="^}" keepend contains=schemaBlockType,schemaBlockTypeKeyword,schemaStatement,schemaTypeUserName display
+syntax keyword  schemaBlockTypeKeyword type contained nextgroup=schemaTypeUserName skipwhite
+
+
+" statements
+syntax region   schemaStatement start="\a" end=";" contained oneline contains=schemaStatementCommand,schemaStatementComponentId,schemaStatementData,schemaStatementEvent,schemaStatementField,schemaStatementOption nextgroup=schemaStatement display
+
+
+" component ID
+syntax match    schemaStatementComponentId "id\s\+=\s\+[1-9][0-9]*\(;\)\@=" contained display
+
+
+" fields
+syntax match    schemaStatementField "\S\+\s\+\S\+\s\+=\s\+\S;" contained contains=schemaStatementFieldName,schemaStatementFieldId,schemaTypeCollection,schemaTypeKeywords,schemaTypeUser display
+syntax match    schemaStatementFieldName "\l\+\(_\l\+\)*\(\s\+=\)\@=" contained nextgroup=schemaStatementFieldId skipwhite
+syntax match    schemaStatementFieldId "\(=\s\+\)\@<=[1-9][0-9]*\(;\)\@=" contained display
+
+
+" data component
+syntax match    schemaStatementData "data\s\+\S\+;" contained contains=schemaStatementDataKeyword,schemaTypeCollection,schemaTypeKeywords,schemaTypeUser display
+syntax keyword  schemaStatementDataKeyword data contained nextgroup=schemaTypeKeywords,schemaTypeUser skipwhite
+
+
+" options
+syntax region   schemaStatementOption start="option" end=";" contained contains=schemaStatementOptionKeywords,schemaStatementOptionType,schemaStatementOptionValue display
+syntax keyword  schemaStatementOptionKeyword option contained nextgroup=schemaStatementOptionType skipwhite
+syntax keyword  schemaStatementOptionType queryable synchronized contained nextgroup=schemaStatementOptionValue skipwhite
+syntax keyword  schemaStatementOptionValue true false contained
+
+
+" events
+syntax match    schemaStatementEvent "event\s\+\S\+\s\+\S\+;" contained contains=schemaStatementEventKeyword,schemaStatementEventName,schemaTypeCollection,schemaTypeKeywords,schemaTypeUser display
+syntax keyword  schemaStatementEventKeyword event contained nextgroup=schemaTypeCollection,schemaTypeKeywords,schemaTypeUser skipwhite
+syntax match    schemaStatementEventName "\l\+\(_\l\+\)*\(;\)\@=" contained display
+
+
+" commands
+syntax region   schemaStatementCommand start="command" end=";" contained contains=schemaStatementCommandInput,schemaStatementCommandKeyword,schemaStatementCommandName,schemaStatementCommandOutput display
+syntax keyword  schemaStatementCommandKeyword command contained nextgroup=schemaStatementCommandOutput skipwhite
+syntax match    schemaStatementCommandOutput "\u\S*\s" contained contains=schemaTypeCollection,schemaTypeKeywords,schemaTypeUser nextgroup=schemaStatementCommandName skipwhite
+syntax match    schemaStatementCommandName "\l\+\(_\l\+\)*\((\)\@=" contained nextgroup=schemaStatementCommandInput display
+syntax region   schemaStatementCommandInput start="(" end=")" contained contains=schemaTypeCollection,schemaTypeKeywords,schemaTypeUser skipwhite
 
 
 "-------------------------------------------------------------------------------
 " Highlight configuration
 "-------------------------------------------------------------------------------
 
-" highlighting groups
-highlight link schemaTodo              Todo
+""" highlighting groups
+highlight link schemaTodo                       Todo
 
-highlight link schemaComment           Comment
+highlight link schemaComment                    Comment
 
-highlight link schemaPackageKeyword    Keyword
-highlight link schemaPackageName       Identifier
+highlight link schemaPackageKeyword             Keyword
+highlight link schemaPackageName                Identifier
 
-highlight link schemaComponentId       Constant
+highlight link schemaTypeUserName               Type
 
-highlight link schemaContainerKeywords Structure
+highlight link schemaTypeKeywords               Type
 
-highlight link schemaOptionKeywords    Keyword
-highlight link schemaOptionType        Structure
-highlight link schemaOptionValue       Constant
+highlight link schemaTypeCollectionKeywords     Type
 
-highlight link schemaEventKeywords     Structure
-highlight link schemaEventName         Identifier
+highlight link schemaBlockComponentKeyword      Keyword
 
-highlight link schemaCommandKeywords   Structure
-highlight link schemaCommandName       Identifier
+highlight link schemaBlockEnumKeyword           Keyword
+highlight link schemaBlockEnumField             Identifier
 
-highlight link schemaDataKeywords      Structure
+highlight link schemaBlockTypeKeyword           Keyword
 
-highlight link schemaUserTypeName      Type
-highlight link schemaUserTypeKeyword   Keyword
+highlight link schemaStatementFieldId           Constant
 
-highlight link schemaTypeKeywords      Type
+highlight link schemaStatementComponentId       Constant
 
-highlight link schemaFieldName         Identifier
-highlight link schemaFieldId           Constant
+highlight link schemaStatementFieldName         Identifier
 
+highlight link schemaStatementDataKeyword       Keyword
+
+highlight link schemaStatementOptionKeyword     Keyword
+highlight link schemaStatementOptionType        Structure
+highlight link schemaStatementOptionValue       Constant
+
+highlight link schemaStatementEventKeyword      Keyword
+highlight link schemaStatementEventName         Identifier
+
+highlight link schemaStatementCommandKeyword    Keyword
+highlight link schemaStatementCommandName       Identifier
 
 
 "-------------------------------------------------------------------------------
