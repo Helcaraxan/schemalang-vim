@@ -39,6 +39,9 @@ git clone https://github.com/Helcaraxan/schemalang-vim
 ```
 
 ## Release-notes
+### v0.1.5 - 26 / 07 / 2017
+* Squashed a bug where comments where not always correctly highlighted inside type and component blocks.
+
 ### v0.1.4 - 09 / 04 / 2017
 * Solved an issue where user-defined types were not correctly colored in some circumstances.
 * Added support for coloring of types that are imported from other packages.

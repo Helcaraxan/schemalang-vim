@@ -50,19 +50,19 @@ syntax region   schemaTypeCollectionContainer start="<" end=">" contained contai
 
 
 " component block
-syntax region   schemaBlockComponent start="component" end="^}" keepend contains=schemaBlockComponent,schemaBlockComponentKeyword,schemaStatement,schemaTypeUserName display
+syntax region   schemaBlockComponent start="component" end="^}" keepend contains=schemaBlockComponent,schemaBlockComponentKeyword,schemaStatement,schemaTypeUserName,schemaComment display
 syntax keyword  schemaBlockComponentKeyword component contained nextgroup=schemaTypeUserName skipwhite
 
 
 " enum block
-syntax region   schemaBlockEnum start="enum" end="^}" keepend contains=schemaBlockEnumField,schemaBlockEnumKeyword,schemaBlockEnumStatement,schemaTypeUserName display
+syntax region   schemaBlockEnum start="enum" end="^}" keepend contains=schemaBlockEnumField,schemaBlockEnumKeyword,schemaBlockEnumStatement,schemaTypeUserName,schemaComment display
 syntax keyword  schemaBlockEnumKeyword enum contained nextgroup=schemaTypeUserName skipwhite
-syntax region   schemaBlockEnumStatement start="\a" end=";" contained oneline contains=schemaBlockEnumField,schemaFieldId nextgroup=schemaBlockEnumStatement display
+syntax region   schemaBlockEnumStatement start="\a" end=";" contained oneline contains=schemaBlockEnumField,schemaFieldId nextgroup=schemaBlockEnumStatement,schemaComment display
 syntax match    schemaBlockEnumField "\a\+" contained nextgroup=schemaFieldId display
 
 
 " type block
-syntax region   schemaBlockType start="type \u\a* {" end="^}" keepend contains=schemaBlockType,schemaBlockTypeKeyword,schemaStatement,schemaTypeUserName display
+syntax region   schemaBlockType start="type \u\a* {" end="^}" keepend contains=schemaBlockType,schemaBlockTypeKeyword,schemaStatement,schemaTypeUserName,schemaComment display
 syntax keyword  schemaBlockTypeKeyword type contained nextgroup=schemaTypeUserName skipwhite
 
 
